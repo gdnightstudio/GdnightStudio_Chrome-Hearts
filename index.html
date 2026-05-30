@@ -519,9 +519,10 @@
                     <a href="${actionLink}" class="${actionClass}" target="_blank">${actionText}</a>
                     ${isAdmin ? `
                         <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;">
+                            <button class="btn-sm" style="flex:1 1 45%; color:#44aaff" onclick="editProduct(${originalIndex})">${t.btnEdit}</button>
                             <button class="btn-sm" style="flex:1 1 45%;" onclick="toggleSoldOut(${originalIndex})">${prod.isSoldOut ? t.btnInStock : t.btnSoldOut}</button>
                             <button class="btn-sm" style="flex:1 1 45%; background:#333; border-color:#555;" onclick="setCheckoutLink(${originalIndex})">${t.btnSetLink}</button>
-                            <button class="btn-sm" style="flex:1 1 100%; color:#ff4444" onclick="deleteProduct(${originalIndex})">${t.btnDelete}</button>
+                            <button class="btn-sm" style="flex:1 1 45%; color:#ff4444" onclick="deleteProduct(${originalIndex})">${t.btnDelete}</button>
                         </div>` : ''}
                 `;
                 grid.appendChild(card);
