@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GDNIGHT STUDIO | Chrome Hearts In-Stock</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;600&family=Noto+Sans+TC:wght@300;400&display=swap');
+
+        :root { --bg-color: #000000; --text-color: #ffffff; --text-muted: #888888; --border-color: #222222; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Montserrat', 'Noto Sans TC', sans-serif; letter-spacing: 1px; line-height: 1.6; }
+
+        /* 語言切換按鈕 */
+        #langToggle {
+            position: absolute; top: 20px; right: 20px; font-size: 0.75rem;
+            cursor: pointer; border: 1px solid var(--border-color);
+            padding: 5px 10px; z-index: 100; text-transform: uppercase;
+        }
+
+        /* 頁首與導航 */
+        header { position: relative; text-align: center; padding: 40px 20px 20px 20px; cursor: default; }
+        header h1 { font-weight: 200; font-size: 2rem; letter-spacing: 8px; }
+        .header-disclaimer { font-size: 0.65rem; color: var(--text-muted); margin-top: 10px; opacity: 0.8; }
+
+        #secretTrigger {
+            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            width: 120px; height: 60px; z-index: 99; cursor: pointer;
+        }
+
+        .category-wrapper {
+            width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+            padding: 0 20px 15px 20px; white-space: nowrap;
+        }
+        .category-wrapper::-webkit-scrollbar { display: none; }
+        
+        #mainCategoryWrapper { margin-bottom: 5px; }
+        #subCategoryWrapper { margin-bottom: 20px; padding-top: 5px; }
+        .nav-divider { border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+
+        .category-list { display: inline-flex; gap: 20px; }
+        
+        .cat-btn {
+            background: none; border: none; color: var(--text-muted);
+            font-family: inherit; font-size: 0.75rem; letter-spacing: 1px;
+            cursor: pointer; padding-bottom: 5px; text-transform: uppercase; transition: color 0.2s ease;
+        }
+        .cat-btn.active { color: #fff; font-weight: 600; border-bottom: 1px solid #fff; }
+
+        .sub-cat-btn {
+            background: none; border: none; color: #555;
+            font-family: inherit; font-size: 0.65rem; letter-spacing: 1px;
+            cursor: pointer; padding-bottom: 3px; text-transform: uppercase;
+        }
+        .sub-cat-btn.active { color: #ccc; font-weight: 600; border-bottom: 1px solid #ccc; }
+
+        /* 產品列表 */
+        .product-grid { 
+            display: grid; grid-template-columns: repeat(2, 1fr); 
+            gap: 40px 12px; padding: 0 15px 40px 15px; max-width: 800px; margin: 0 auto; 
+        }
+        .product-card { display: flex; flex-direction: column; position: relative; padding-bottom: 20px; border-bottom: 1px solid #111; }
+        
+        .product-card.sold-out .img-container::after { 
+            content: "SOLD OUT"; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; 
+            font-size: 1.1rem; letter-spacing: 3px; color: #fff;
+        }
+        .product-card.sold-out .action-btn { display: none; }
+
+        .img-container { 
+            width: 100%; aspect-ratio: 9 / 16; height: auto; 
+            background-color: #0a0a0a; margin-bottom: 15px; position: relative; overflow: hidden;
+        }
+        .product-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .action-btn { 
+            display: block; width: 100%; padding: 12px 0; text-align: center; 
+            text-decoration: none; border: 1px solid #fff; background: #fff; 
+            color: #000; font-size: 0.7rem; font-weight: 600; 
+        }
+        .action-btn.checkout-ready { background: #1a1a1a; color: #fff; border: 1px solid #555; }
+        
+        .btn-sm { padding: 8px 6px; font-size: 0.65rem; cursor: pointer; border: 1px solid #444; background: #222; color: #fff; margin-top: 5px; }
+        .empty-msg { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 40px; grid-column: 1 / -1; }
+
+        /* 條款板塊 */
+        .policy-container { padding: 40px 20px 80px 20px; max-width: 600px; margin: 0 auto; border-top: 1px solid var(--border-color); }
+        .policy-section { margin-bottom: 30px; }
+        .policy-title { font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .policy-content { font-size: 0.7rem; color: var(--text-muted); }
+        .policy-content ul { padding-left: 15px; margin-top: 5px; }
+        .policy-content li { margin-bottom: 5px; }
+        
+        .lang-en { display: none; }
+
+        /* 後台介面 */
+        #adminPanel {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.98); z-index: 999; padding: 40px 20px; overflow-y: auto;
+        }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; padding: 14px; background: #000; border: 1px solid #333; color: #fff; font-family: inherit; margin-bottom: 20px;
+        }
+        .form-group select { appearance: none; -webkit-appearance: none; }
+        .submit-btn { width: 100%; background: #fff; color: #000; padding: 16px; font-weight: 600; cursor: pointer; text-transform: uppercase; border: none; }
+    </style>
+</head>
+<body>
+
+    <header id="mainHeader">
+        <div id="langToggle" onclick="toggleLanguage()">中 / EN</div>
+        <div id="secretTrigger"></div>
+        <h1>GDNIGHT STUDIO</h1>
+        <p id="ui-subtitle" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;"></p>
+        <p class="header-disclaimer">
+            <span class="lang-zh">庫存流動快速。所有庫存與最終價格均以 WhatsApp 確認為準。</span>
+            <span class="lang-en">Inventory moves fast. All stock and final pricing are subject to confirmation via WhatsApp.</span>
+        </p>
+    </header>
+
+    <div class="category-wrapper" id="mainCategoryWrapper">
+        <div class="category-list" id="categoryList"></div>
+    </div>
+    
+    <div class="category-wrapper" id="subCategoryWrapper" style="display: none;">
+        <div class="category-list" id="subCategoryList" style="gap: 15px;"></div>
+    </div>
+    
+    <div class="nav-divider"></div>
+    
+    <div class="product-grid" id="productGrid"></div>
+
+    <div class="policy-container">
+        <div class="lang-zh">
+            <div class="policy-section">
+                <h3 class="policy-title">訂購條款 (Terms & Conditions)</h3>
+                <div class="policy-content">
+                    <ul>
+                        <li>訂金規則：3萬以下收取 80% 訂金；3萬以上收取 90% 訂金。</li>
+                        <li>棄單政策：基於運營成本考量，棄單訂金恕不退還。</li>
+                        <li>溫馨提示：商品吊牌一經拆除，本店無法協助處理任何售後諮詢。</li>
+                        <li>真偽鑑定：若對商品真偽有疑慮，僅在商品保留原裝吊牌、並提供官方鑑定報告的前提下，本店方可受理。</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="policy-section">
+                <h3 class="policy-title">物流資訊 (Shipping & Delivery)</h3>
+                <div class="policy-content">
+                    <p>現貨源自：美國 / 日本 / 英國 / 法國 (到港需時約 4 日)。</p>
+                    <p>到貨後會拍攝實物細節供確認，隨後安排：</p>
+                    <ul>
+                        <li><strong>a) 郵寄：</strong>付款後 2-5 日內寄出。平郵 +$8 / 順豐到付。</li>
+                        <li><strong>b) 面交：</strong>MTR 紅色線、綠色線沿途面交。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="lang-en">
+            <div class="policy-section">
+                <h3 class="policy-title">Terms & Conditions</h3>
+                <div class="policy-content">
+                    <ul>
+                        <li>Deposit: 80% for items under $30k; 90% for items over $30k.</li>
+                        <li>Policy: Deposits are non-refundable for order cancellations.</li>
+                        <li>Notice: We cannot provide after-sales service once the tags are removed.</li>
+                        <li>Authentication: Disputes regarding authenticity are only accepted with original tags attached and an official authentication report provided.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="policy-section">
+                <h3 class="policy-title">Shipping & Delivery</h3>
+                <div class="policy-content">
+                    <p>Stock Source: USA / Japan / UK / France (Approx. 4 days for HK delivery).</p>
+                    <p>Details will be provided upon arrival before delivery:</p>
+                    <ul>
+                        <li><strong>a) Shipping:</strong> Dispatched within 2-5 days. Local mail +$8 / SF Express (Cash on Delivery).</li>
+                        <li><strong>b) Meet-up:</strong> Available along the MTR Red or Green Line.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminPanel">
+        <h2 id="ui-admin-title" style="margin-bottom: 20px;">Admin Panel</h2>
+        <div class="form-group">
+            <select id="prodCategory" onchange="renderAdminSubCategorySelect()"></select>
+            <select id="prodSubCategory" style="display:none;"></select>
+            <input type="text" id="prodName" placeholder="Product Name (English)">
+            <input type="text" id="prodPrice" placeholder="Price (Leave blank for PRICE UPON REQUEST)">
+            <textarea id="prodSpecs" placeholder="Specifications"></textarea>
+            <input type="file" id="prodImgFile" accept="image/*" onchange="previewImage(event)">
+        </div>
+        <button class="submit-btn" id="ui-btn-add" onclick="saveProduct()">Add Product</button>
+        <button class="btn-sm" id="ui-btn-close" style="width:100%; margin-top:10px; border:none; padding:12px;" onclick="document.getElementById('adminPanel').style.display='none'">Close Admin</button>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "1234";
+        // WhatsApp 號碼
+        const WHATSAPP_NUMBER = "85261277220";
+        let products = JSON.parse(localStorage.getItem('gdnight_stock')) || [];
+        let currentBase64Image = "";
+        let currentActiveCategory = "all"; 
+        let currentActiveSubCategory = "all";
+
+        const CATEGORY_KEYS = [
+            "all", "pendants", "rings", "bracelets", "necklaces", 
+            "bags", "clothing", "shoes", "glasses", "keychains", 
+            "chains", "accessories", "home"
+        ];
+
+        const SUB_CATEGORIES = {
+            pendants: ["all", "s925", "18k", "22k"],
+            rings: ["all", "s925", "18k", "22k"],
+            bracelets: ["all", "s925", "18k", "22k"],
+            necklaces: ["all", "s925", "18k", "22k"],
+            clothing: ["all", "pants", "tshirt", "vest", "longsleeve", "coat", "skirt", "dress", "collab"]
+        };
+
+        const i18n = {
+            zh: {
+                title: "GDNIGHT STUDIO | Chrome Hearts 現貨目錄",
+                subtitle: "Chrome Hearts 在庫現貨",
+                adminTitle: "管理後台",
+                namePh: "產品名稱 (將保持英文)",
+                pricePh: "價格 (空白顯示 PRICE UPON REQUEST)",
+                specsPh: "規格數據",
+                btnAdd: "上架商品",
+                btnClose: "關閉後台",
+                waMsg: "你好，我在 GDNIGHT STUDIO 看到這款【{name}】，想確認目前是否有現貨？",
+                btnCheck: "點擊確認庫存",
+                btnInStock: "恢復有貨",
+                btnSoldOut: "標記售罄",
+                btnDelete: "刪除",
+                btnSetLink: "🔗 結帳連結",
+                btnCheckout: "🔒 安全結帳 (含手續費)",
+                promptLink: "請貼上 Stripe 付款連結 (留空並確定，則恢復 WhatsApp 詢價)：",
+                promptPwd: "請輸入管理員密碼：",
+                alertImg: "請上傳照片",
+                confirmDel: "確定刪除？",
+                emptyMsg: "此分類目前沒有商品。",
+                categories: {
+                    "all": "全部", "pendants": "吊墜", "rings": "戒指", "bracelets": "手鏈", 
+                    "necklaces": "項鍊", "bags": "包包", "clothing": "衣服", "shoes": "鞋子", 
+                    "glasses": "眼鏡", "keychains": "鑰匙圈", "chains": "褲鏈/包鏈", 
+                    "accessories": "其他配飾", "home": "家居"
+                },
+                subCats: {
+                    "all": "全部", "s925": "S925", "18k": "18k", "22k": "22k",
+                    "pants": "褲子", "tshirt": "短袖", "vest": "背心", "longsleeve": "長袖", 
+                    "coat": "外套", "skirt": "短裙", "dress": "連衣裙", "collab": "聯名系列"
+                }
+            },
+            en: {
+                title: "GDNIGHT STUDIO | Chrome Hearts In-Stock",
+                subtitle: "Chrome Hearts In-Stock Catalog",
+                adminTitle: "Admin Panel",
+                namePh: "Product Name (English)",
+                pricePh: "Price (Leave blank for PRICE UPON REQUEST)",
+                specsPh: "Specifications",
+                btnAdd: "Add Product",
+                btnClose: "Close Admin",
+                waMsg: "Hi, I saw the 【{name}】 on GDNIGHT STUDIO. Is it currently in stock?",
+                btnCheck: "Check Availability",
+                btnInStock: "Mark In-Stock",
+                btnSoldOut: "Mark Sold Out",
+                btnDelete: "Delete",
+                btnSetLink: "🔗 Set Link",
+                btnCheckout: "🔒 Secure Checkout",
+                promptLink: "Paste Stripe payment link (leave blank to revert to WhatsApp):",
+                promptPwd: "Enter Admin Password:",
+                alertImg: "Please upload an image.",
+                confirmDel: "Are you sure you want to delete this?",
+                emptyMsg: "No products found in this category.",
+                categories: {
+                    "all": "All", "pendants": "Pendants", "rings": "Rings", "bracelets": "Bracelets", 
+                    "necklaces": "Necklaces", "bags": "Bags", "clothing": "Clothing", "shoes": "Shoes", 
+                    "glasses": "Glasses", "keychains": "Keychains", "chains": "Chains", 
+                    "accessories": "Accessories", "home": "Home"
+                },
+                subCats: {
+                    "all": "All", "s925": "S925", "18k": "18k", "22k": "22k",
+                    "pants": "Pants", "tshirt": "T-Shirts", "vest": "Vests", "longsleeve": "Long Sleeves", 
+                    "coat": "Coats", "skirt": "Skirts", "dress": "Dresses", "collab": "Collaborations"
+                }
+            }
+        };
+
+        let currentLang = localStorage.getItem('gdnight_lang') || 'en';
+
+        function applyLanguage() {
+            const t = i18n[currentLang];
+            document.title = t.title;
+            document.getElementById('ui-subtitle').innerText = t.subtitle;
+            document.getElementById('ui-admin-title').innerText = t.adminTitle;
+            document.getElementById('prodName').placeholder = t.namePh;
+            document.getElementById('prodPrice').placeholder = t.pricePh;
+            document.getElementById('prodSpecs').placeholder = t.specsPh;
+            document.getElementById('ui-btn-add').innerText = t.btnAdd;
+            document.getElementById('ui-btn-close').innerText = t.btnClose;
+            document.getElementById('langToggle').innerText = currentLang === 'zh' ? 'EN' : '中';
+            
+            const zhElements = document.querySelectorAll('.lang-zh');
+            const enElements = document.querySelectorAll('.lang-en');
+            if (currentLang === 'zh') {
+                zhElements.forEach(el => el.style.display = 'block');
+                enElements.forEach(el => el.style.display = 'none');
+            } else {
+                zhElements.forEach(el => el.style.display = 'none');
+                enElements.forEach(el => el.style.display = 'block');
+            }
+
+            renderCategoryNav();
+            renderAdminCategorySelect();
+            renderProducts();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            localStorage.setItem('gdnight_lang', currentLang);
+            applyLanguage();
+        }
+
+        function renderCategoryNav() {
+            const list = document.getElementById('categoryList');
+            list.innerHTML = '';
+            const tCats = i18n[currentLang].categories;
+            
+            CATEGORY_KEYS.forEach(key => {
+                const btn = document.createElement('button');
+                btn.className = `cat-btn ${currentActiveCategory === key ? 'active' : ''}`;
+                btn.innerText = tCats[key];
+                btn.onclick = () => {
+                    currentActiveCategory = key;
+                    currentActiveSubCategory = 'all'; 
+                    renderCategoryNav(); 
+                    renderProducts();    
+                };
+                list.appendChild(btn);
+            });
+
+            renderSubCategoryNav();
+        }
+
+        function renderSubCategoryNav() {
+            const wrapper = document.getElementById('subCategoryWrapper');
+            const list = document.getElementById('subCategoryList');
+            list.innerHTML = '';
+
+            if (SUB_CATEGORIES[currentActiveCategory]) {
+                wrapper.style.display = 'block';
+                const subKeys = SUB_CATEGORIES[currentActiveCategory];
+                const tSubCats = i18n[currentLang].subCats;
+
+                subKeys.forEach(key => {
+                    const btn = document.createElement('button');
+                    btn.className = `sub-cat-btn ${currentActiveSubCategory === key ? 'active' : ''}`;
+                    btn.innerText = tSubCats[key];
+                    btn.onclick = () => {
+                        currentActiveSubCategory = key;
+                        renderSubCategoryNav(); 
+                        renderProducts();       
+                    };
+                    list.appendChild(btn);
+                });
+            } else {
+                wrapper.style.display = 'none';
+            }
+        }
+
+        function renderAdminCategorySelect() {
+            const select = document.getElementById('prodCategory');
+            select.innerHTML = '';
+            const tCats = i18n[currentLang].categories;
+            
+            CATEGORY_KEYS.forEach(key => {
+                if (key === 'all') return;
+                const option = document.createElement('option');
+                option.value = key;
+                option.innerText = tCats[key];
+                select.appendChild(option);
+            });
+            
+            renderAdminSubCategorySelect();
+        }
+
+        function renderAdminSubCategorySelect() {
+            const mainSelect = document.getElementById('prodCategory').value;
+            const subSelect = document.getElementById('prodSubCategory');
+            subSelect.innerHTML = '';
+
+            if (SUB_CATEGORIES[mainSelect]) {
+                subSelect.style.display = 'block';
+                const subKeys = SUB_CATEGORIES[mainSelect];
+                const tSubCats = i18n[currentLang].subCats;
+                
+                subKeys.forEach(key => {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.innerText = tSubCats[key];
+                    subSelect.appendChild(option);
+                });
+            } else {
+                subSelect.style.display = 'none';
+            }
+        }
+
+        let clickCount = 0;
+        document.getElementById('secretTrigger').addEventListener('click', (e) => {
+            clickCount++;
+            if (clickCount === 2) {
+                const pwd = prompt(i18n[currentLang].promptPwd);
+                if (pwd === ADMIN_PASSWORD) {
+                    document.getElementById('adminPanel').style.display = 'block';
+                    renderProducts();
+                }
+                clickCount = 0;
+            }
+            setTimeout(() => { clickCount = 0; }, 1000);
+        });
+
+        function saveProduct() {
+            if (!currentBase64Image) return alert(i18n[currentLang].alertImg);
+            
+            const category = document.getElementById('prodCategory').value;
+            const subSelect = document.getElementById('prodSubCategory');
+            const subCategory = subSelect.style.display !== 'none' ? subSelect.value : 'all';
+
+            products.unshift({
+                name: document.getElementById('prodName').value,
+                price: document.getElementById('prodPrice').value,
+                specs: document.getElementById('prodSpecs').value,
+                category: category,
+                subCategory: subCategory,
+                img: currentBase64Image,
+                isSoldOut: false,
+                checkoutLink: "" 
+            });
+            localStorage.setItem('gdnight_stock', JSON.stringify(products));
+            location.reload();
+        }
+
+        function toggleSoldOut(index) {
+            products[index].isSoldOut = !products[index].isSoldOut;
+            localStorage.setItem('gdnight_stock', JSON.stringify(products));
+            renderProducts();
+        }
+        
+        function setCheckoutLink(index) {
+            const currentLink = products[index].checkoutLink || "";
+            const newLink = prompt(i18n[currentLang].promptLink, currentLink);
+            
+            if (newLink !== null) {
+                products[index].checkoutLink = newLink.trim();
+                localStorage.setItem('gdnight_stock', JSON.stringify(products));
+                renderProducts(); 
+            }
+        }
+
+        function deleteProduct(index) {
+            if(confirm(i18n[currentLang].confirmDel)) {
+                products.splice(index, 1);
+                localStorage.setItem('gdnight_stock', JSON.stringify(products));
+                renderProducts();
+            }
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productGrid');
+            const isAdmin = document.getElementById('adminPanel').style.display === 'block';
+            const t = i18n[currentLang];
+            grid.innerHTML = '';
+            
+            const filteredProducts = products.map((prod, index) => ({prod, index}))
+                .filter(item => currentActiveCategory === 'all' || item.prod.category === currentActiveCategory)
+                .filter(item => {
+                    if (currentActiveSubCategory === 'all') return true;
+                    const prodSub = item.prod.subCategory || 'all';
+                    return prodSub === currentActiveSubCategory;
+                });
+
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = `<div class="empty-msg">${t.emptyMsg}</div>`;
+                return;
+            }
+            
+            filteredProducts.forEach(item => {
+                const prod = item.prod;
+                const originalIndex = item.index;
+
+                const waText = t.waMsg.replace('{name}', prod.name);
+                const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
+                
+                const hasCheckout = prod.checkoutLink && prod.checkoutLink.trim() !== "";
+                const actionLink = hasCheckout ? prod.checkoutLink : waLink;
+                const actionText = hasCheckout ? t.btnCheckout : t.btnCheck;
+                const actionClass = hasCheckout ? "action-btn checkout-ready" : "action-btn";
+                
+                let categoryLabel = t.categories[prod.category || 'accessories'];
+                if (prod.subCategory && prod.subCategory !== 'all' && t.subCats[prod.subCategory]) {
+                    categoryLabel += ` / ${t.subCats[prod.subCategory]}`;
+                }
+
+                const card = document.createElement('div');
+                card.className = `product-card ${prod.isSoldOut ? 'sold-out' : ''}`;
+                card.innerHTML = `
+                    <div class="img-container"><img src="${prod.img}" class="product-img"></div>
+                    <h2 style="font-size:0.85rem; margin-bottom:5px; line-height:1.2;">${prod.name}</h2>
+                    <div style="font-size:0.6rem; color:var(--text-muted); margin-bottom:5px;">[ ${categoryLabel} ]</div>
+                    <div style="font-weight:600; margin-bottom:12px; font-size:0.75rem;">${prod.price ? 'HK$ ' + prod.price : 'PRICE UPON REQUEST'}</div>
+                    <a href="${actionLink}" class="${actionClass}" target="_blank">${actionText}</a>
+                    ${isAdmin ? `
+                        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px;">
+                            <button class="btn-sm" style="flex:1 1 45%;" onclick="toggleSoldOut(${originalIndex})">${prod.isSoldOut ? t.btnInStock : t.btnSoldOut}</button>
+                            <button class="btn-sm" style="flex:1 1 45%; background:#333; border-color:#555;" onclick="setCheckoutLink(${originalIndex})">${t.btnSetLink}</button>
+                            <button class="btn-sm" style="flex:1 1 100%; color:#ff4444" onclick="deleteProduct(${originalIndex})">${t.btnDelete}</button>
+                        </div>` : ''}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    
+                    const MAX_WIDTH = 800;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height = height * (MAX_WIDTH / width);
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    currentBase64Image = canvas.toDataURL('image/jpeg', 0.85);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        applyLanguage();
+    </script>
+</body>
+</html>
