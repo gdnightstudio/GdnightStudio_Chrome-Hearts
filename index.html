@@ -461,7 +461,30 @@
             localStorage.setItem('gdnight_stock', JSON.stringify(products));
             location.reload();
         }
+  function editProduct(index) {
+            editProductIndex = index;
+            const prod = products[index];
+            
+            // 將現有資料填入表單
+            document.getElementById('prodName').value = prod.name || "";
+            document.getElementById('prodPrice').value = prod.price || "";
+            document.getElementById('prodSpecs').value = prod.specs || "";
+            document.getElementById('prodCategory').value = prod.category;
+            
+            // 刷新子分類選單並設定值
+            renderAdminSubCategorySelect(); 
+            if (prod.subCategory) {
+                document.getElementById('prodSubCategory').value = prod.subCategory;
+            }
+            
+            // 清空檔案上傳器（若未上傳新圖，保存時會自動沿用舊圖）
+            document.getElementById('prodImgFile').value = '';
+            currentBase64Image = ''; 
 
+            // 將新增按鈕的文字改成「更新商品」並顯示後台面板
+            document.getElementById('ui-btn-add').innerText = i18n[currentLang].btnUpdate;
+            document.getElementById('adminPanel').style.display = 'block';
+        }
         function toggleSoldOut(index) {
             products[index].isSoldOut = !products[index].isSoldOut;
             localStorage.setItem('gdnight_stock', JSON.stringify(products));
