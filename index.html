@@ -427,23 +427,37 @@
             setTimeout(() => { clickCount = 0; }, 1000);
         });
 
-        function saveProduct() {
-            if (!currentBase64Image) return alert(i18n[currentLang].alertImg);
+       function saveProduct() {
+            if (!currentBase64Image && editProductIndex === -1) return alert(i18n[currentLang].alertImg);
             
             const category = document.getElementById('prodCategory').value;
             const subSelect = document.getElementById('prodSubCategory');
             const subCategory = subSelect.style.display !== 'none' ? subSelect.value : 'all';
 
-            products.unshift({
-                name: document.getElementById('prodName').value,
-                price: document.getElementById('prodPrice').value,
-                specs: document.getElementById('prodSpecs').value,
-                category: category,
-                subCategory: subCategory,
-                img: currentBase64Image,
-                isSoldOut: false,
-                checkoutLink: "" 
-            });
+            if (editProductIndex > -1) {
+                // 更新現有商品
+                products[editProductIndex].name = document.getElementById('prodName').value;
+                products[editProductIndex].price = document.getElementById('prodPrice').value;
+                products[editProductIndex].specs = document.getElementById('prodSpecs').value;
+                products[editProductIndex].category = category;
+                products[editProductIndex].subCategory = subCategory;
+                if (currentBase64Image) {
+                    products[editProductIndex].img = currentBase64Image; // 有上傳新圖片才更新
+                }
+            } else {
+                // 新增商品
+                products.unshift({
+                    name: document.getElementById('prodName').value,
+                    price: document.getElementById('prodPrice').value,
+                    specs: document.getElementById('prodSpecs').value,
+                    category: category,
+                    subCategory: subCategory,
+                    img: currentBase64Image,
+                    isSoldOut: false,
+                    checkoutLink: "" 
+                });
+            }
+
             localStorage.setItem('gdnight_stock', JSON.stringify(products));
             location.reload();
         }
