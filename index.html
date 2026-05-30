@@ -205,6 +205,7 @@
         let currentBase64Image = "";
         let currentActiveCategory = "all"; 
         let currentActiveSubCategory = "all";
+        let editProductIndex = -1;
 
         const CATEGORY_KEYS = [
             "all", "pendants", "rings", "bracelets", "necklaces", 
@@ -240,7 +241,7 @@
                 promptLink: "請貼上 Stripe 付款連結 (留空並確定，則恢復 WhatsApp 詢價)：",
                 promptPwd: "請輸入管理員密碼：",
                 alertImg: "請上傳照片",
-                confirmDel: "確定刪除？”,
+                confirmDel: "確定刪除？",
                 btnEdit: "編輯",
                 btnUpdate: "更新商品",
                 emptyMsg: "此分類目前沒有商品。",
