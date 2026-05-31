@@ -14,5 +14,12 @@
       "binding": "DB",
       "id": "ee35536fecd64344b5a378e69505034e"
     }
+  ],
+  "rules": [
+    {
+      "type": "Text",
+      "globs": ["**/*.html"],
+      "fallthrough": true
+    }
   ]
 }
