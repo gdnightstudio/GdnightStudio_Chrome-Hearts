@@ -1,4 +1,3 @@
-
 import HTML_CONTENT from "./index.html";
 
 export default {
