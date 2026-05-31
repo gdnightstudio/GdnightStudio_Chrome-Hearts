@@ -1,20 +1,18 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "gdnightstudiochromehearts2021",
+  "main": "index.js",
   "compatibility_date": "2026-05-30",
   "observability": {
     "enabled": true
   },
-  "assets": {
-    "directory": "."
-  },
   "compatibility_flags": [
     "nodejs_compat"
-  ]
-"kv_namespaces": [
+  ],
+  "kv_namespaces": [
     {
       "binding": "DB",
       "id": "ee35536fecd64344b5a378e69505034e"
     }
-  ],
+  ]
 }
