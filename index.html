@@ -457,7 +457,7 @@
             setTimeout(() => { clickCount = 0; }, 1000);
         });
 
-       function saveProduct() {
+function saveProduct() {
             if (!currentBase64Image && editProductIndex === -1) return alert(i18n[currentLang].alertImg);
             
             const category = document.getElementById('prodCategory').value;
@@ -488,10 +488,10 @@
                 });
             }
 
-            syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
-            location.reload();
+            syncToCloud(); // 乾淨俐落，呼叫雲端！
         }
-  function editProduct(index) {
+
+        function editProduct(index) {
             editProductIndex = index;
             const prod = products[index];
             
@@ -515,9 +515,10 @@
             document.getElementById('ui-btn-add').innerText = i18n[currentLang].btnUpdate;
             document.getElementById('adminPanel').style.display = 'block';
         }
+
         function toggleSoldOut(index) {
             products[index].isSoldOut = !products[index].isSoldOut;
-          syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
+            syncToCloud(); // 乾淨俐落！
             renderProducts();
         }
         
@@ -527,7 +528,7 @@
             
             if (newLink !== null) {
                 products[index].checkoutLink = newLink.trim();
-                syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
+                syncToCloud(); // 乾淨俐落！
                 renderProducts(); 
             }
         }
@@ -535,7 +536,7 @@
         function deleteProduct(index) {
             if(confirm(i18n[currentLang].confirmDel)) {
                 products.splice(index, 1);
-               syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
+                syncToCloud(); // 乾淨俐落！
                 renderProducts();
             }
         }
