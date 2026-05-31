@@ -201,7 +201,37 @@
         const ADMIN_PASSWORD = "200002201";
         const IMGBB_API_KEY = "48d59a1ed14ab156962174179b2eaff7";
         const WHATSAPP_NUMBER = "85261277220";
-        let products = JSON.parse(localStorage.getItem('gdnight_stock')) || [];
+       let products = [];
+        // 1. 網頁一打開，就去雲端資料庫拿產品
+        async function fetchProducts() {
+            try {
+                const response = await fetch('/api/products');
+                products = await response.json();
+                renderProducts(); // 拿到資料後畫出卡片
+            } catch (error) {
+                console.error("載入失敗", error);
+            }
+        }
+        fetchProducts(); // 網頁載入時立刻執行
+
+        // 2. 把產品存進雲端資料庫的函數
+        async function syncToCloud() {
+            const btn = document.getElementById('ui-btn-add');
+            if (btn) btn.innerText = "🔄 同步至雲端中...";
+            try {
+                await fetch('/api/products', {
+                    method: 'POST',
+                    body: JSON.stringify(products)
+                });
+                location.reload(); // 存完重新整理，大家就都看得到了！
+            } catch (error) {
+                alert("儲存失敗！");
+                if (btn) {
+                    btn.innerText = "Add Product";
+                    btn.disabled = false;
+                }
+            }
+        }
         let currentBase64Image = "";
         let currentActiveCategory = "all"; 
         let currentActiveSubCategory = "all";
@@ -458,7 +488,7 @@
                 });
             }
 
-            localStorage.setItem('gdnight_stock', JSON.stringify(products));
+            syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
             location.reload();
         }
   function editProduct(index) {
@@ -487,7 +517,7 @@
         }
         function toggleSoldOut(index) {
             products[index].isSoldOut = !products[index].isSoldOut;
-            localStorage.setItem('gdnight_stock', JSON.stringify(products));
+          syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
             renderProducts();
         }
         
@@ -497,7 +527,7 @@
             
             if (newLink !== null) {
                 products[index].checkoutLink = newLink.trim();
-                localStorage.setItem('gdnight_stock', JSON.stringify(products));
+                syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
                 renderProducts(); 
             }
         }
@@ -505,7 +535,7 @@
         function deleteProduct(index) {
             if(confirm(i18n[currentLang].confirmDel)) {
                 products.splice(index, 1);
-                localStorage.setItem('gdnight_stock', JSON.stringify(products));
+               syncToCloud();.setItem('gdnight_stock', JSON.stringify(products));
                 renderProducts();
             }
         }
