@@ -302,11 +302,18 @@
                     method: 'POST',
                     body: JSON.stringify(products)
                 });
-                location.reload(); 
+                
+                // 更新背景的產品列表
+                renderProducts();
+                // 清空表單並重置按鈕狀態
+                resetAdminForm();
+                // 重置編輯狀態，避免下次新增商品變成覆蓋舊商品
+                editProductIndex = -1;
+
             } catch (error) {
                 alert("儲存失敗！");
                 if (btn) {
-                    btn.innerText = "Add Product";
+                    btn.innerText = i18n[currentLang].btnAdd;
                     btn.disabled = false;
                 }
             }
@@ -436,7 +443,7 @@
             document.getElementById('label-condition').innerText = t.labelCondition;
             document.getElementById('label-size').innerText = t.labelSize;
             document.getElementById('label-accessories').innerText = t.labelAccessories;
-            document.getElementById('ui-btn-add').innerText = t.btnAdd;
+            document.getElementById('ui-btn-add').innerText = editProductIndex === -1 ? t.btnAdd : t.btnUpdate;
             document.getElementById('ui-btn-close').innerText = t.btnClose;
             document.getElementById('langToggle').innerText = currentLang === 'zh' ? 'EN' : '中';
             
@@ -592,6 +599,23 @@
                 });
             }
             syncToCloud(); 
+        }
+
+        // 新增的清空表單函數
+        function resetAdminForm() {
+            document.getElementById('prodName').value = '';
+            document.getElementById('prodPrice').value = '';
+            document.getElementById('prodSize').value = '';
+            document.getElementById('prodCondition').value = '';
+            document.getElementById('prodAccessories').value = '';
+            document.getElementById('prodImgFile').value = '';
+            currentBase64Image = '';
+            
+            const btn = document.getElementById('ui-btn-add');
+            if(btn) {
+                btn.innerText = i18n[currentLang].btnAdd;
+                btn.disabled = false;
+            }
         }
 
         function editProduct(index) {
