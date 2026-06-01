@@ -92,18 +92,29 @@
         .btn-sm { padding: 8px 6px; font-size: 0.65rem; cursor: pointer; border: 1px solid #444; background: #222; color: #fff; margin-top: 5px; }
         .empty-msg { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 40px; grid-column: 1 / -1; }
 
-   /* 聯絡我們與 VIP 專區 (Premium Design) */
+        /* 懸浮管理工具列 */
+        #adminToolbar {
+            display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(20, 20, 20, 0.95); border: 1px solid #444; border-radius: 30px;
+            padding: 10px 20px; z-index: 900; align-items: center; gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+        }
+        .toolbar-btn {
+            background: #fff; color: #000; border: none; padding: 10px 20px; border-radius: 20px;
+            font-weight: 600; cursor: pointer; font-size: 0.75rem; text-transform: uppercase;
+        }
+        .toolbar-btn.logout { background: transparent; color: #ff4444; border: 1px solid #ff4444; }
+
+        /* 聯絡我們與 VIP 專區 (Premium Design) */
         .contact-container { padding: 60px 20px 40px 20px; max-width: 600px; margin: 0 auto; text-align: center; border-top: 1px solid #111; }
         .contact-title { font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 200; text-transform: uppercase; margin-bottom: 30px; color: #fff; letter-spacing: 4px; }
         
-        /* 社交平台連結特效 */
         .social-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 50px; }
         .social-links a { color: #666; text-decoration: none; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; position: relative; padding-bottom: 6px; transition: color 0.4s ease; }
         .social-links a::after { content: ''; position: absolute; width: 0; height: 1px; bottom: 0; left: 50%; background-color: #fff; transition: all 0.4s ease; transform: translateX(-50%); }
         .social-links a:hover { color: #fff; }
         .social-links a:hover::after { width: 100%; }
 
-        /* 專屬群組板塊 */
         .vip-section { border: 1px solid #1a1a1a; padding: 45px 20px; background: #030303; transition: border-color 0.4s ease; }
         .vip-section:hover { border-color: #333; }
         .vip-title { font-size: 0.7rem; color: #fff; letter-spacing: 4px; font-weight: 400; text-transform: uppercase; margin-bottom: 12px; }
@@ -127,19 +138,6 @@
         .policy-content li { margin-bottom: 5px; }
         
         .lang-en { display: none; }
-
-        /* 懸浮管理工具列 */
-        #adminToolbar {
-            display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: rgba(20, 20, 20, 0.95); border: 1px solid #444; border-radius: 30px;
-            padding: 10px 20px; z-index: 900; align-items: center; gap: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-        }
-        .toolbar-btn {
-            background: #fff; color: #000; border: none; padding: 10px 20px; border-radius: 20px;
-            font-weight: 600; cursor: pointer; font-size: 0.75rem; text-transform: uppercase;
-        }
-        .toolbar-btn.logout { background: transparent; color: #ff4444; border: 1px solid #ff4444; }
 
         /* 後台介面 (覆蓋層) */
         #adminPanel {
@@ -213,20 +211,18 @@
         <button class="toolbar-btn logout" id="ui-btn-toolbar-logout" onclick="logoutAdmin()">退出管理</button>
     </div>
 
-<div class="contact-container">
+    <div class="contact-container">
         <h3 class="contact-title">
             <span class="lang-zh">聯絡我們</span>
             <span class="lang-en">Contact Us</span>
         </h3>
         
-        <!-- 簡約社交連結 -->
         <div class="social-links">
             <a href="https://www.instagram.com/gdnight_studio" target="_blank">Instagram</a>
             <a href="https://www.facebook.com" target="_blank">Facebook</a>
             <a href="https://wa.me/85261277220" target="_blank">WhatsApp</a>
         </div>
 
-        <!-- 質感 VIP 邀請區塊 -->
         <div class="vip-section">
             <div class="lang-zh">
                 <div class="vip-title">專屬客戶名單</div>
@@ -247,14 +243,28 @@
             </div>
         </div>
     </div>
+
     <div class="policy-container">
         <div class="lang-zh">
             <div class="policy-section">
-                <h3 class="policy-title">訂購條款</h3>
+                <h3 class="policy-title">訂購條款 (Terms & Conditions)</h3>
                 <div class="policy-content">
                     <ul>
                         <li>訂金規則：3萬以下收取 80% 訂金；3萬以上收取 90% 訂金。</li>
                         <li>棄單政策：基於運營成本考量，棄單訂金恕不退還。</li>
+                        <li>溫馨提示：商品吊牌一經拆除，本店無法協助處理任何售後諮詢。</li>
+                        <li>真偽鑑定：若對商品真偽有疑慮，僅在商品保留原裝吊牌、並提供官方鑑定報告的前提下，本店方可受理。</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="policy-section">
+                <h3 class="policy-title">物流資訊 (Shipping & Delivery)</h3>
+                <div class="policy-content">
+                    <p>現貨源自：美國 / 日本 / 英國 / 法國 (到港需時約 4 日)。</p>
+                    <p>到貨後會拍攝實物細節供確認，隨後安排：</p>
+                    <ul>
+                        <li><strong>a) 郵寄：</strong>付款後 2-5 日內寄出。平郵 +$8 / 順豐到付。</li>
+                        <li><strong>b) 面交：</strong>MTR 紅色線、綠色線沿途面交。</li>
                     </ul>
                 </div>
             </div>
@@ -266,6 +276,19 @@
                     <ul>
                         <li>Deposit: 80% for items under $30k; 90% for items over $30k.</li>
                         <li>Policy: Deposits are non-refundable for order cancellations.</li>
+                        <li>Notice: We cannot provide after-sales service once the tags are removed.</li>
+                        <li>Authentication: Disputes regarding authenticity are only accepted with original tags attached and an official authentication report provided.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="policy-section">
+                <h3 class="policy-title">Shipping & Delivery</h3>
+                <div class="policy-content">
+                    <p>Stock Source: USA / Japan / UK / France (Approx. 4 days for HK delivery).</p>
+                    <p>Details will be provided upon arrival before delivery:</p>
+                    <ul>
+                        <li><strong>a) Shipping:</strong> Dispatched within 2-5 days. Local mail +$8 / SF Express (Cash on Delivery).</li>
+                        <li><strong>b) Meet-up:</strong> Available along the MTR Red or Green Line.</li>
                     </ul>
                 </div>
             </div>
@@ -314,6 +337,9 @@
                 <option value="Vintage">Vintage</option>
                 <option value="S">S</option>
                 <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
             </select>
             
             <input type="text" id="prodSize" placeholder="Size (e.g., OS, US 9, L)">
@@ -322,6 +348,7 @@
                 <option value="" disabled selected id="optAccessoriesPh">Select Accessories</option>
                 <option value="Full set">Full set</option>
                 <option value="with leather pouch only">with leather pouch only</option>
+                <option value="with leather pouch and paper bag only">with leather pouch and paper bag only</option>
             </select>
 
             <input type="file" id="prodImgFile" accept="image/*" onchange="previewImage(event)">
@@ -335,7 +362,7 @@
         const WHATSAPP_NUMBER = "85261277220";
         
         let products = [];
-        let isAdminMode = false; // 新增全域管理員狀態
+        let isAdminMode = false;
         
         const PRODUCTS_PER_PAGE = 12; 
         let currentPage = 1;         
@@ -347,10 +374,9 @@
                 products = await response.json();
                 renderProducts(); 
             } catch (error) {
-                console.error("載入失敗", error);
+                console.error("載入失敗 (若是單機測試，此錯誤屬正常現象)", error);
             }
         }
-        // 為了展示目的，我們先不阻擋測試
         fetchProducts(); 
 
         async function syncToCloud() {
@@ -361,12 +387,9 @@
                     method: 'POST',
                     body: JSON.stringify(products)
                 });
-                
                 renderProducts();
-                closeAdminForm(); // 儲存成功後自動關閉表單回到列表
+                closeAdminForm(); 
             } catch (error) {
-                // 為了前端測試，即使 API 失敗我們也更新畫面並關閉
-                console.log("Mock saved successfully.");
                 renderProducts();
                 closeAdminForm(); 
             }
@@ -377,9 +400,16 @@
         let currentActiveSubCategory = "all";
         let editProductIndex = -1;
 
-        const CATEGORY_KEYS = ["all", "pendants", "rings", "bracelets", "necklaces", "bags", "clothing", "shoes", "accessories"];
+        const CATEGORY_KEYS = ["all", "pendants", "rings", "bracelets", "necklaces", "belt_buckles", "clothing", "bags", "shoes", "accessories", "home"];
+
         const SUB_CATEGORIES = {
-            clothing: ["all", "pants", "tshirt", "coat"]
+            pendants: ["all", "s925", "18k", "22k"],
+            rings: ["all", "s925", "18k", "22k"],
+            bracelets: ["all", "s925", "18k", "22k"],
+            necklaces: ["all", "s925", "18k", "22k"],
+            belt_buckles: ["all", "s925", "18k", "22k"],
+            clothing: ["all", "pants", "coat", "tshirt", "longsleeve", "hoodie", "dress", "skirt", "collab"],
+            home: ["all", "fragrance", "perfume", "furniture"]
         };
 
         const i18n = {
@@ -415,8 +445,17 @@
                 btnEdit: "編輯",
                 btnUpdate: "更新商品",
                 emptyMsg: "此分類目前沒有商品或找不到符合的結果。",
-                categories: { "all": "全部", "pendants": "吊墜", "rings": "戒指", "bracelets": "手鏈", "necklaces": "項鍊", "bags": "包包", "clothing": "衣服", "shoes": "鞋子", "accessories": "配飾" },
-                subCats: { "all": "全部", "pants": "褲子", "tshirt": "短袖", "coat": "外套" }
+                categories: { 
+                    "all": "全部", "pendants": "吊墜", "rings": "戒指", "bracelets": "手鏈", 
+                    "necklaces": "項鍊", "belt_buckles": "皮帶扣", "clothing": "衣服", 
+                    "bags": "包包", "shoes": "鞋子", "accessories": "配飾", "home": "家居" 
+                },
+                subCats: { 
+                    "all": "全部", "s925": "S925", "18k": "18K", "22k": "22K", 
+                    "pants": "褲子", "coat": "外套", "tshirt": "短袖", "longsleeve": "長袖", 
+                    "hoodie": "帽衫", "dress": "連衣裙", "skirt": "短裙", "collab": "聯名系列",
+                    "fragrance": "香氛", "perfume": "香水", "furniture": "傢俱"
+                }
             },
             en: {
                 title: "GDNIGHT STUDIO | Chrome Hearts In-Stock",
@@ -450,8 +489,17 @@
                 btnEdit: "Edit",
                 btnUpdate: "Update Product",
                 emptyMsg: "No products found in this category or matching your search.",
-                categories: { "all": "All", "pendants": "Pendants", "rings": "Rings", "bracelets": "Bracelets", "necklaces": "Necklaces", "bags": "Bags", "clothing": "Clothing", "shoes": "Shoes", "accessories": "Accessories" },
-                subCats: { "all": "All", "pants": "Pants", "tshirt": "T-Shirts", "coat": "Coats" }
+                categories: { 
+                    "all": "All", "pendants": "Pendants", "rings": "Rings", "bracelets": "Bracelets", 
+                    "necklaces": "Necklaces", "belt_buckles": "Belt Buckles", "clothing": "Clothing", 
+                    "bags": "Bags", "shoes": "Shoes", "accessories": "Accessories", "home": "Home" 
+                },
+                subCats: { 
+                    "all": "All", "s925": "S925", "18k": "18K", "22k": "22K", 
+                    "pants": "Pants", "coat": "Coats", "tshirt": "T-Shirts", "longsleeve": "Long Sleeves", 
+                    "hoodie": "Hoodies", "dress": "Dresses", "skirt": "Skirts", "collab": "Collabs",
+                    "fragrance": "Fragrance", "perfume": "Perfume", "furniture": "Furniture"
+                }
             }
         };
 
@@ -597,7 +645,6 @@
             }
         }
 
-        // 修改後的驗證與工具列邏輯
         let clickCount = 0;
         document.getElementById('secretTrigger').addEventListener('click', (e) => {
             clickCount++;
@@ -606,14 +653,13 @@
                 if (pwd === ADMIN_PASSWORD) {
                     isAdminMode = true;
                     document.getElementById('adminToolbar').style.display = 'flex';
-                    renderProducts(); // 重新渲染列表以顯示管理按鈕
+                    renderProducts();
                 }
                 clickCount = 0;
             }
             setTimeout(() => { clickCount = 0; }, 1000);
         });
 
-        // 打開管理表單
         function openAdminForm() {
             resetAdminForm();
             editProductIndex = -1;
@@ -622,13 +668,11 @@
             document.body.style.overflow = 'hidden'; 
         }
 
-        // 關閉管理表單
         function closeAdminForm() {
             document.getElementById('adminPanel').style.display = 'none';
             document.body.style.overflow = 'auto'; 
         }
 
-        // 退出管理員模式
         function logoutAdmin() {
             isAdminMode = false;
             document.getElementById('adminToolbar').style.display = 'none';
