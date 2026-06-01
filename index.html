@@ -400,19 +400,20 @@
         let currentActiveSubCategory = "all";
         let editProductIndex = -1;
 
-        const CATEGORY_KEYS = ["all", "pendants", "rings", "bracelets", "necklaces", "belt_buckles", "clothing", "bags", "shoes", "accessories", "home"];
+        const CATEGORY_KEYS = ["all", "pendants", "rings", "bracelets", "necklaces", "earrings", "belt_buckles", "clothing", "hats", "bags", "shoes", "accessories", "home"];
 
-        const SUB_CATEGORIES = {
+const SUB_CATEGORIES = {
             pendants: ["all", "s925", "18k", "22k"],
             rings: ["all", "s925", "18k", "22k"],
             bracelets: ["all", "s925", "18k", "22k"],
             necklaces: ["all", "s925", "18k", "22k"],
+            earrings: ["all", "s925", "18k", "22k"],
             belt_buckles: ["all", "s925", "18k", "22k"],
             clothing: ["all", "pants", "coat", "tshirt", "longsleeve", "hoodie", "dress", "skirt", "collab"],
             home: ["all", "fragrance", "perfume", "furniture"]
         };
 
-        const i18n = {
+const i18n = {
             zh: {
                 title: "GDNIGHT STUDIO | Chrome Hearts 現貨目錄",
                 subtitle: "Chrome Hearts 在庫現貨",
@@ -447,8 +448,8 @@
                 emptyMsg: "此分類目前沒有商品或找不到符合的結果。",
                 categories: { 
                     "all": "全部", "pendants": "吊墜", "rings": "戒指", "bracelets": "手鏈", 
-                    "necklaces": "項鍊", "belt_buckles": "皮帶扣", "clothing": "衣服", 
-                    "bags": "包包", "shoes": "鞋子", "accessories": "配飾", "home": "家居" 
+                    "necklaces": "項鍊", "earrings": "耳環", "belt_buckles": "皮帶扣", "clothing": "衣服", 
+                    "hats": "帽子", "bags": "包包", "shoes": "鞋子", "accessories": "配飾", "home": "家居" 
                 },
                 subCats: { 
                     "all": "全部", "s925": "S925", "18k": "18K", "22k": "22K", 
@@ -491,8 +492,8 @@
                 emptyMsg: "No products found in this category or matching your search.",
                 categories: { 
                     "all": "All", "pendants": "Pendants", "rings": "Rings", "bracelets": "Bracelets", 
-                    "necklaces": "Necklaces", "belt_buckles": "Belt Buckles", "clothing": "Clothing", 
-                    "bags": "Bags", "shoes": "Shoes", "accessories": "Accessories", "home": "Home" 
+                    "necklaces": "Necklaces", "earrings": "Earrings", "belt_buckles": "Belt Buckles", "clothing": "Clothing", 
+                    "hats": "Hats", "bags": "Bags", "shoes": "Shoes", "accessories": "Accessories", "home": "Home" 
                 },
                 subCats: { 
                     "all": "All", "s925": "S925", "18k": "18K", "22k": "22K", 
