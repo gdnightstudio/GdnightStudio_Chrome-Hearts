@@ -54,6 +54,14 @@
         }
         .sub-cat-btn.active { color: #ccc; font-weight: 600; border-bottom: 1px solid #ccc; }
 
+        /* 搜尋列 */
+        .search-container { padding: 0 20px 30px 20px; max-width: 800px; margin: 0 auto; }
+        .search-container input { 
+            width: 100%; padding: 12px 15px; background: #0a0a0a; border: 1px solid #333; 
+            color: #fff; font-family: inherit; font-size: 0.8rem; border-radius: 0; outline: none; transition: border 0.3s;
+        }
+        .search-container input:focus { border-color: #fff; }
+
         /* 產品列表 */
         .product-grid { 
             display: grid; grid-template-columns: repeat(2, 1fr); 
@@ -115,7 +123,7 @@
         .form-group select { appearance: none; -webkit-appearance: none; }
         .submit-btn { width: 100%; background: #fff; color: #000; padding: 16px; font-weight: 600; cursor: pointer; text-transform: uppercase; border: none; }
 
-        /* 產品詳細頁面 (Detail View) */
+        /* 產品詳細頁面 */
         #productDetailView {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-color); z-index: 500; overflow-y: auto; padding-bottom: 80px;
@@ -126,15 +134,9 @@
         .btn-back {
             background: none; border: none; color: #fff; font-size: 0.8rem; font-family: inherit; cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
         }
-        .detail-content {
-            max-width: 600px; margin: 0 auto; padding: 0 20px;
-        }
-        .detail-img-container {
-            width: 100%; background-color: #0a0a0a; margin-bottom: 20px;
-        }
-        .detail-img-container img {
-            width: 100%; height: auto; display: block;
-        }
+        .detail-content { max-width: 600px; margin: 0 auto; padding: 0 20px; }
+        .detail-img-container { width: 100%; background-color: #0a0a0a; margin-bottom: 20px; }
+        .detail-img-container img { width: 100%; height: auto; display: block; }
         .detail-title { font-size: 1.2rem; font-weight: 400; margin-bottom: 5px; line-height: 1.4; }
         .detail-cat { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 15px; }
         .detail-price { font-size: 1rem; font-weight: 600; margin-bottom: 30px; }
@@ -167,8 +169,19 @@
     </div>
     
     <div class="nav-divider"></div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="搜尋商品...">
+    </div>
     
     <div class="product-grid" id="productGrid"></div>
+
+    <div id="loadMoreContainer" style="text-align: center; padding-bottom: 40px; display: none;">
+        <button id="btnLoadMore" onclick="loadMoreProducts()" style="padding: 12px 40px; background: #fff; color: #000; border: none; font-size: 0.75rem; cursor: pointer; letter-spacing: 2px; font-weight: 600; text-transform: uppercase;">
+            <span class="lang-zh">載入更多</span>
+            <span class="lang-en">Load More</span>
+        </button>
+    </div>
 
     <div class="contact-container">
         <h3 class="contact-title">
@@ -176,7 +189,7 @@
             <span class="lang-en">Contact Us</span>
         </h3>
         
-<div class="social-links">
+        <div class="social-links">
             <a href="https://www.instagram.com/gdnight_studio?igsh=ejgzamwzaDdmMzFq&utm_source=qr" target="_blank">Instagram</a>
             <a href="https://www.facebook.com/share/1Ety2uHVab/?mibextid=wwXIfr" target="_blank">Facebook</a>
             <a href="https://wa.me/85261277220" target="_blank">WhatsApp</a>
@@ -322,7 +335,13 @@
         const ADMIN_PASSWORD = "200002201";
         const IMGBB_API_KEY = "48d59a1ed14ab156962174179b2eaff7";
         const WHATSAPP_NUMBER = "85261277220";
+        
         let products = [];
+        
+        // 分頁與搜尋變數
+        const PRODUCTS_PER_PAGE = 12; 
+        let currentPage = 1;          
+        let searchQuery = "";         
         
         async function fetchProducts() {
             try {
@@ -344,13 +363,9 @@
                     body: JSON.stringify(products)
                 });
                 
-                // 更新背景的產品列表
                 renderProducts();
-                // 清空表單並重置按鈕狀態
                 resetAdminForm();
-                // 重置編輯狀態，避免下次新增商品變成覆蓋舊商品
                 editProductIndex = -1;
-
             } catch (error) {
                 alert("儲存失敗！");
                 if (btn) {
@@ -384,6 +399,7 @@
                 title: "GDNIGHT STUDIO | Chrome Hearts 現貨目錄",
                 subtitle: "Chrome Hearts 在庫現貨",
                 adminTitle: "管理後台",
+                searchPh: "搜尋商品名稱...",
                 namePh: "產品名稱 (將保持英文)",
                 pricePh: "價格 (空白顯示 PRICE UPON REQUEST)",
                 conditionPh: "商品狀況 (Condition)",
@@ -410,7 +426,7 @@
                 confirmDel: "確定刪除？",
                 btnEdit: "編輯",
                 btnUpdate: "更新商品",
-                emptyMsg: "此分類目前沒有商品。",
+                emptyMsg: "此分類目前沒有商品或找不到符合的結果。",
                 categories: {
                     "all": "全部", "pendants": "吊墜", "rings": "戒指", "bracelets": "手鏈", 
                     "necklaces": "項鍊", "bags": "包包", "clothing": "衣服", "shoes": "鞋子", 
@@ -427,6 +443,7 @@
                 title: "GDNIGHT STUDIO | Chrome Hearts In-Stock",
                 subtitle: "Chrome Hearts In-Stock Catalog",
                 adminTitle: "Admin Panel",
+                searchPh: "Search products...",
                 namePh: "Product Name (English)",
                 pricePh: "Price (Leave blank for PRICE UPON REQUEST)",
                 conditionPh: "Condition",
@@ -453,7 +470,7 @@
                 confirmDel: "Are you sure you want to delete this?",
                 btnEdit: "Edit",
                 btnUpdate: "Update Product",
-                emptyMsg: "No products found in this category.",
+                emptyMsg: "No products found in this category or matching your search.",
                 categories: {
                     "all": "All", "pendants": "Pendants", "rings": "Rings", "bracelets": "Bracelets", 
                     "necklaces": "Necklaces", "bags": "Bags", "clothing": "Clothing", "shoes": "Shoes", 
@@ -475,6 +492,7 @@
             document.title = t.title;
             document.getElementById('ui-subtitle').innerText = t.subtitle;
             document.getElementById('ui-admin-title').innerText = t.adminTitle;
+            document.getElementById('searchInput').placeholder = t.searchPh;
             document.getElementById('prodName').placeholder = t.namePh;
             document.getElementById('prodPrice').placeholder = t.pricePh;
             document.getElementById('prodSize').placeholder = t.sizePh;
@@ -487,6 +505,11 @@
             document.getElementById('ui-btn-add').innerText = editProductIndex === -1 ? t.btnAdd : t.btnUpdate;
             document.getElementById('ui-btn-close').innerText = t.btnClose;
             document.getElementById('langToggle').innerText = currentLang === 'zh' ? 'EN' : '中';
+            
+            const btnLoadMore = document.getElementById('btnLoadMore');
+            if(btnLoadMore) {
+                btnLoadMore.innerHTML = currentLang === 'zh' ? '載入更多' : 'LOAD MORE';
+            }
             
             const zhElements = document.querySelectorAll('.lang-zh');
             const enElements = document.querySelectorAll('.lang-en');
@@ -509,6 +532,19 @@
             applyLanguage();
         }
 
+        // 搜尋功能
+        function handleSearch(val) {
+            searchQuery = val.toLowerCase().trim();
+            currentPage = 1; // 搜尋時重置頁數
+            renderProducts();
+        }
+
+        // 載入更多
+        function loadMoreProducts() {
+            currentPage++;
+            renderProducts();
+        }
+
         function renderCategoryNav() {
             const list = document.getElementById('categoryList');
             list.innerHTML = '';
@@ -521,6 +557,7 @@
                 btn.onclick = () => {
                     currentActiveCategory = key;
                     currentActiveSubCategory = 'all'; 
+                    currentPage = 1; // 切換分類時重置頁數
                     renderCategoryNav(); 
                     renderProducts();   
                 };
@@ -546,6 +583,7 @@
                     btn.innerText = tSubCats[key];
                     btn.onclick = () => {
                         currentActiveSubCategory = key;
+                        currentPage = 1; // 切換子分類時重置頁數
                         renderSubCategoryNav(); 
                         renderProducts();       
                     };
@@ -642,7 +680,6 @@
             syncToCloud(); 
         }
 
-        // 新增的清空表單函數
         function resetAdminForm() {
             document.getElementById('prodName').value = '';
             document.getElementById('prodPrice').value = '';
@@ -719,14 +756,29 @@
                     if (currentActiveSubCategory === 'all') return true;
                     const prodSub = item.prod.subCategory || 'all';
                     return prodSub === currentActiveSubCategory;
+                })
+                .filter(item => {
+                    if (searchQuery === "") return true;
+                    return (item.prod.name || "").toLowerCase().includes(searchQuery);
                 });
 
             if (filteredProducts.length === 0) {
                 grid.innerHTML = `<div class="empty-msg">${t.emptyMsg}</div>`;
+                document.getElementById('loadMoreContainer').style.display = 'none';
                 return;
             }
             
-            filteredProducts.forEach(item => {
+            // 分頁邏輯
+            const displayCount = currentPage * PRODUCTS_PER_PAGE;
+            const productsToShow = filteredProducts.slice(0, displayCount);
+
+            if (filteredProducts.length > displayCount) {
+                document.getElementById('loadMoreContainer').style.display = 'block';
+            } else {
+                document.getElementById('loadMoreContainer').style.display = 'none';
+            }
+            
+            productsToShow.forEach(item => {
                 const prod = item.prod;
                 const originalIndex = item.index;
 
