@@ -104,6 +104,35 @@
         }
         .form-group select { appearance: none; -webkit-appearance: none; }
         .submit-btn { width: 100%; background: #fff; color: #000; padding: 16px; font-weight: 600; cursor: pointer; text-transform: uppercase; border: none; }
+
+        /* 產品詳細頁面 (Detail View) */
+        #productDetailView {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); z-index: 500; overflow-y: auto; padding-bottom: 80px;
+        }
+        .detail-header {
+            position: sticky; top: 0; padding: 20px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 501;
+        }
+        .btn-back {
+            background: none; border: none; color: #fff; font-size: 0.8rem; font-family: inherit; cursor: pointer; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .detail-content {
+            max-width: 600px; margin: 0 auto; padding: 0 20px;
+        }
+        .detail-img-container {
+            width: 100%; background-color: #0a0a0a; margin-bottom: 20px;
+        }
+        .detail-img-container img {
+            width: 100%; height: auto; display: block;
+        }
+        .detail-title { font-size: 1.2rem; font-weight: 400; margin-bottom: 5px; line-height: 1.4; }
+        .detail-cat { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 15px; }
+        .detail-price { font-size: 1rem; font-weight: 600; margin-bottom: 30px; }
+        .detail-specs-box { border-top: 1px solid #222; border-bottom: 1px solid #222; padding: 20px 0; margin-bottom: 30px; }
+        .spec-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.8rem; }
+        .spec-label { color: var(--text-muted); text-transform: uppercase; font-size: 0.7rem; }
+        .spec-value { color: #fff; text-align: right; max-width: 70%; word-break: break-word; }
+        .spec-row:last-child { margin-bottom: 0; }
     </style>
 </head>
 <body>
@@ -183,6 +212,37 @@
         </div>
     </div>
 
+    <div id="productDetailView">
+        <div class="detail-header">
+            <button class="btn-back" onclick="closeProductDetail()">← <span id="ui-btn-back">Back</span></button>
+        </div>
+        <div class="detail-content">
+            <div class="detail-img-container">
+                <img id="detailImg" src="" alt="Product Image">
+            </div>
+            <h1 class="detail-title" id="detailTitle"></h1>
+            <div class="detail-cat" id="detailCategory"></div>
+            <div class="detail-price" id="detailPrice"></div>
+            
+            <div class="detail-specs-box">
+                <div class="spec-row">
+                    <span class="spec-label" id="label-condition">Condition</span>
+                    <span class="spec-value" id="detailCondition"></span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label" id="label-size">Size</span>
+                    <span class="spec-value" id="detailSize"></span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label" id="label-accessories">Accessories</span>
+                    <span class="spec-value" id="detailAccessories"></span>
+                </div>
+            </div>
+            
+            <a id="detailActionBtn" href="#" class="action-btn" target="_blank"></a>
+        </div>
+    </div>
+
     <div id="adminPanel">
         <h2 id="ui-admin-title" style="margin-bottom: 20px;">Admin Panel</h2>
         <div class="form-group">
@@ -190,7 +250,27 @@
             <select id="prodSubCategory" style="display:none;"></select>
             <input type="text" id="prodName" placeholder="Product Name (English)">
             <input type="text" id="prodPrice" placeholder="Price (Leave blank for PRICE UPON REQUEST)">
-            <textarea id="prodSpecs" placeholder="Specifications"></textarea>
+            
+            <select id="prodCondition">
+                <option value="" disabled selected id="optConditionPh">Select Condition</option>
+                <option value="Brand New">Brand New</option>
+                <option value="Vintage">Vintage</option>
+                <option value="S">S</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+            </select>
+            
+            <input type="text" id="prodSize" placeholder="Size (e.g., OS, US 9, L)">
+            
+            <select id="prodAccessories">
+                <option value="" disabled selected id="optAccessoriesPh">Select Accessories</option>
+                <option value="Full set">Full set</option>
+                <option value="with leather pouch only">with leather pouch only</option>
+                <option value="with leather pouch and paper bag only">with leather pouch and paper bag only</option>
+            </select>
+
             <input type="file" id="prodImgFile" accept="image/*" onchange="previewImage(event)">
         </div>
         <button class="submit-btn" id="ui-btn-add" onclick="saveProduct()">Add Product</button>
@@ -201,20 +281,19 @@
         const ADMIN_PASSWORD = "200002201";
         const IMGBB_API_KEY = "48d59a1ed14ab156962174179b2eaff7";
         const WHATSAPP_NUMBER = "85261277220";
-       let products = [];
-        // 1. 網頁一打開，就去雲端資料庫拿產品
+        let products = [];
+        
         async function fetchProducts() {
             try {
                 const response = await fetch('/api/products');
                 products = await response.json();
-                renderProducts(); // 拿到資料後畫出卡片
+                renderProducts(); 
             } catch (error) {
                 console.error("載入失敗", error);
             }
         }
-        fetchProducts(); // 網頁載入時立刻執行
+        fetchProducts(); 
 
-        // 2. 把產品存進雲端資料庫的函數
         async function syncToCloud() {
             const btn = document.getElementById('ui-btn-add');
             if (btn) btn.innerText = "🔄 同步至雲端中...";
@@ -223,7 +302,7 @@
                     method: 'POST',
                     body: JSON.stringify(products)
                 });
-                location.reload(); // 存完重新整理，大家就都看得到了！
+                location.reload(); 
             } catch (error) {
                 alert("儲存失敗！");
                 if (btn) {
@@ -232,6 +311,7 @@
                 }
             }
         }
+        
         let currentBase64Image = "";
         let currentActiveCategory = "all"; 
         let currentActiveSubCategory = "all";
@@ -258,7 +338,15 @@
                 adminTitle: "管理後台",
                 namePh: "產品名稱 (將保持英文)",
                 pricePh: "價格 (空白顯示 PRICE UPON REQUEST)",
-                specsPh: "規格數據",
+                conditionPh: "商品狀況 (Condition)",
+                sizePh: "尺寸 (Size)",
+                accessoriesPh: "配件 (Accessories)",
+                btnBack: "返回目錄",
+                labelCondition: "狀況",
+                labelSize: "尺寸",
+                labelAccessories: "配件",
+                optConditionPh: "請選擇商品狀況 (Condition)",
+                optAccessoriesPh: "請選擇配件 (Accessories)",
                 btnAdd: "上架商品",
                 btnClose: "關閉後台",
                 waMsg: "你好，我在 GDNIGHT STUDIO 看到這款【{name}】，想確認目前是否有現貨？",
@@ -293,7 +381,15 @@
                 adminTitle: "Admin Panel",
                 namePh: "Product Name (English)",
                 pricePh: "Price (Leave blank for PRICE UPON REQUEST)",
-                specsPh: "Specifications",
+                conditionPh: "Condition",
+                sizePh: "Size (e.g., OS, US 9, L)",
+                accessoriesPh: "Accessories",
+                btnBack: "Back",
+                labelCondition: "Condition",
+                labelSize: "Size",
+                labelAccessories: "Accessories",
+                optConditionPh: "Select Condition",
+                optAccessoriesPh: "Select Accessories",
                 btnAdd: "Add Product",
                 btnClose: "Close Admin",
                 waMsg: "Hi, I saw the 【{name}】 on GDNIGHT STUDIO. Is it currently in stock?",
@@ -333,7 +429,13 @@
             document.getElementById('ui-admin-title').innerText = t.adminTitle;
             document.getElementById('prodName').placeholder = t.namePh;
             document.getElementById('prodPrice').placeholder = t.pricePh;
-            document.getElementById('prodSpecs').placeholder = t.specsPh;
+            document.getElementById('prodSize').placeholder = t.sizePh;
+            document.getElementById('optConditionPh').innerText = t.optConditionPh;
+            document.getElementById('optAccessoriesPh').innerText = t.optAccessoriesPh;
+            document.getElementById('ui-btn-back').innerText = t.btnBack;
+            document.getElementById('label-condition').innerText = t.labelCondition;
+            document.getElementById('label-size').innerText = t.labelSize;
+            document.getElementById('label-accessories').innerText = t.labelAccessories;
             document.getElementById('ui-btn-add').innerText = t.btnAdd;
             document.getElementById('ui-btn-close').innerText = t.btnClose;
             document.getElementById('langToggle').innerText = currentLang === 'zh' ? 'EN' : '中';
@@ -372,7 +474,7 @@
                     currentActiveCategory = key;
                     currentActiveSubCategory = 'all'; 
                     renderCategoryNav(); 
-                    renderProducts();    
+                    renderProducts();   
                 };
                 list.appendChild(btn);
             });
@@ -457,7 +559,7 @@
             setTimeout(() => { clickCount = 0; }, 1000);
         });
 
-function saveProduct() {
+        function saveProduct() {
             if (!currentBase64Image && editProductIndex === -1) return alert(i18n[currentLang].alertImg);
             
             const category = document.getElementById('prodCategory').value;
@@ -465,21 +567,23 @@ function saveProduct() {
             const subCategory = subSelect.style.display !== 'none' ? subSelect.value : 'all';
 
             if (editProductIndex > -1) {
-                // 更新現有商品
                 products[editProductIndex].name = document.getElementById('prodName').value;
                 products[editProductIndex].price = document.getElementById('prodPrice').value;
-                products[editProductIndex].specs = document.getElementById('prodSpecs').value;
+                products[editProductIndex].condition = document.getElementById('prodCondition').value; 
+                products[editProductIndex].size = document.getElementById('prodSize').value;           
+                products[editProductIndex].accessories = document.getElementById('prodAccessories').value; 
                 products[editProductIndex].category = category;
                 products[editProductIndex].subCategory = subCategory;
                 if (currentBase64Image) {
-                    products[editProductIndex].img = currentBase64Image; // 有上傳新圖片才更新
+                    products[editProductIndex].img = currentBase64Image; 
                 }
             } else {
-                // 新增商品
                 products.unshift({
                     name: document.getElementById('prodName').value,
                     price: document.getElementById('prodPrice').value,
-                    specs: document.getElementById('prodSpecs').value,
+                    condition: document.getElementById('prodCondition').value, 
+                    size: document.getElementById('prodSize').value,           
+                    accessories: document.getElementById('prodAccessories').value, 
                     category: category,
                     subCategory: subCategory,
                     img: currentBase64Image,
@@ -487,38 +591,35 @@ function saveProduct() {
                     checkoutLink: "" 
                 });
             }
-
-            syncToCloud(); // 乾淨俐落，呼叫雲端！
+            syncToCloud(); 
         }
 
         function editProduct(index) {
             editProductIndex = index;
             const prod = products[index];
             
-            // 將現有資料填入表單
             document.getElementById('prodName').value = prod.name || "";
             document.getElementById('prodPrice').value = prod.price || "";
-            document.getElementById('prodSpecs').value = prod.specs || "";
+            document.getElementById('prodCondition').value = prod.condition || prod.specs || ""; 
+            document.getElementById('prodSize').value = prod.size || "";
+            document.getElementById('prodAccessories').value = prod.accessories || "";
             document.getElementById('prodCategory').value = prod.category;
             
-            // 刷新子分類選單並設定值
             renderAdminSubCategorySelect(); 
             if (prod.subCategory) {
                 document.getElementById('prodSubCategory').value = prod.subCategory;
             }
             
-            // 清空檔案上傳器（若未上傳新圖，保存時會自動沿用舊圖）
             document.getElementById('prodImgFile').value = '';
             currentBase64Image = ''; 
 
-            // 將新增按鈕的文字改成「更新商品」並顯示後台面板
             document.getElementById('ui-btn-add').innerText = i18n[currentLang].btnUpdate;
             document.getElementById('adminPanel').style.display = 'block';
         }
 
         function toggleSoldOut(index) {
             products[index].isSoldOut = !products[index].isSoldOut;
-            syncToCloud(); // 乾淨俐落！
+            syncToCloud(); 
             renderProducts();
         }
         
@@ -528,7 +629,7 @@ function saveProduct() {
             
             if (newLink !== null) {
                 products[index].checkoutLink = newLink.trim();
-                syncToCloud(); // 乾淨俐落！
+                syncToCloud(); 
                 renderProducts(); 
             }
         }
@@ -536,7 +637,7 @@ function saveProduct() {
         function deleteProduct(index) {
             if(confirm(i18n[currentLang].confirmDel)) {
                 products.splice(index, 1);
-                syncToCloud(); // 乾淨俐落！
+                syncToCloud(); 
                 renderProducts();
             }
         }
@@ -580,8 +681,10 @@ function saveProduct() {
                 const card = document.createElement('div');
                 card.className = `product-card ${prod.isSoldOut ? 'sold-out' : ''}`;
                 card.innerHTML = `
-                    <div class="img-container"><img src="${prod.img}" class="product-img"></div>
-                    <h2 style="font-size:0.85rem; margin-bottom:5px; line-height:1.2;">${prod.name}</h2>
+                    <div class="img-container" style="cursor:pointer;" onclick="openProductDetail(${originalIndex})">
+                        <img src="${prod.img}" class="product-img">
+                    </div>
+                    <h2 style="font-size:0.85rem; margin-bottom:5px; line-height:1.2; cursor:pointer;" onclick="openProductDetail(${originalIndex})">${prod.name}</h2>
                     <div style="font-size:0.6rem; color:var(--text-muted); margin-bottom:5px;">[ ${categoryLabel} ]</div>
                     <div style="font-weight:600; margin-bottom:12px; font-size:0.75rem;">${prod.price ? 'HK$ ' + prod.price : 'PRICE UPON REQUEST'}</div>
                     <a href="${actionLink}" class="${actionClass}" target="_blank">${actionText}</a>
@@ -622,6 +725,44 @@ function saveProduct() {
                 img.src = e.target.result;
             };
             reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function openProductDetail(index) {
+            const prod = products[index];
+            const t = i18n[currentLang];
+            
+            let categoryLabel = t.categories[prod.category || 'accessories'];
+            if (prod.subCategory && prod.subCategory !== 'all' && t.subCats[prod.subCategory]) {
+                categoryLabel += ` / ${t.subCats[prod.subCategory]}`;
+            }
+
+            const waText = t.waMsg.replace('{name}', prod.name);
+            const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
+            const hasCheckout = prod.checkoutLink && prod.checkoutLink.trim() !== "";
+            
+            document.getElementById('detailImg').src = prod.img;
+            document.getElementById('detailTitle').innerText = prod.name;
+            document.getElementById('detailCategory').innerText = `[ ${categoryLabel} ]`;
+            document.getElementById('detailPrice').innerText = prod.price ? 'HK$ ' + prod.price : 'PRICE UPON REQUEST';
+            
+            document.getElementById('detailCondition').innerText = prod.condition || prod.specs || "N/A";
+            document.getElementById('detailSize').innerText = prod.size || "N/A";
+            document.getElementById('detailAccessories').innerText = prod.accessories || "N/A";
+
+            const actionBtn = document.getElementById('detailActionBtn');
+            actionBtn.href = hasCheckout ? prod.checkoutLink : waLink;
+            actionBtn.innerText = hasCheckout ? t.btnCheckout : t.btnCheck;
+            actionBtn.className = hasCheckout ? "action-btn checkout-ready" : "action-btn";
+            
+            actionBtn.style.display = prod.isSoldOut ? 'none' : 'block';
+
+            document.getElementById('productDetailView').style.display = 'block';
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeProductDetail() {
+            document.getElementById('productDetailView').style.display = 'none';
+            document.body.style.overflow = 'auto'; 
         }
 
         applyLanguage();
