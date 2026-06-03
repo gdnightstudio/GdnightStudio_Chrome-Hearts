@@ -11,14 +11,12 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Montserrat', 'Noto Sans TC', sans-serif; letter-spacing: 1px; line-height: 1.6; }
 
-        /* 語言切換按鈕 */
         #langToggle {
             position: absolute; top: 20px; right: 20px; font-size: 0.75rem;
             cursor: pointer; border: 1px solid var(--border-color);
             padding: 5px 10px; z-index: 100; text-transform: uppercase;
         }
 
-        /* 頁首與導航 */
         header { position: relative; text-align: center; padding: 40px 20px 20px 20px; cursor: default; }
         header h1 { font-weight: 200; font-size: 2rem; letter-spacing: 8px; }
         .header-disclaimer { font-size: 0.65rem; color: var(--text-muted); margin-top: 10px; opacity: 0.8; }
@@ -54,7 +52,6 @@
         }
         .sub-cat-btn.active { color: #ccc; font-weight: 600; border-bottom: 1px solid #ccc; }
 
-        /* 搜尋列 */
         .search-container { padding: 0 20px 30px 20px; max-width: 800px; margin: 0 auto; }
         .search-container input { 
             width: 100%; padding: 12px 15px; background: #0a0a0a; border: 1px solid #333; 
@@ -62,7 +59,6 @@
         }
         .search-container input:focus { border-color: #fff; }
 
-        /* 產品列表 */
         .product-grid { 
             display: grid; grid-template-columns: repeat(2, 1fr); 
             gap: 40px 12px; padding: 0 15px 40px 15px; max-width: 800px; margin: 0 auto; 
@@ -92,7 +88,6 @@
         .btn-sm { padding: 8px 6px; font-size: 0.65rem; cursor: pointer; border: 1px solid #444; background: #222; color: #fff; margin-top: 5px; }
         .empty-msg { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 40px; grid-column: 1 / -1; }
 
-        /* 懸浮管理工具列 */
         #adminToolbar {
             display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: rgba(20, 20, 20, 0.95); border: 1px solid #444; border-radius: 30px;
@@ -105,7 +100,6 @@
         }
         .toolbar-btn.logout { background: transparent; color: #ff4444; border: 1px solid #ff4444; }
 
-        /* 聯絡我們與 VIP 專區 (Premium Design) */
         .contact-container { padding: 60px 20px 40px 20px; max-width: 600px; margin: 0 auto; text-align: center; border-top: 1px solid #111; }
         .contact-title { font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 200; text-transform: uppercase; margin-bottom: 30px; color: #fff; letter-spacing: 4px; }
         
@@ -129,7 +123,6 @@
         }
         .vip-btn:hover { border-color: #fff; color: #fff; background: rgba(255, 255, 255, 0.05); letter-spacing: 3px; }
 
-        /* 條款板塊 */
         .policy-container { padding: 40px 20px 80px 20px; max-width: 600px; margin: 0 auto; border-top: 1px solid var(--border-color); }
         .policy-section { margin-bottom: 30px; }
         .policy-title { font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px; color: #fff; border-bottom: 1px solid #333; padding-bottom: 5px; }
@@ -139,7 +132,6 @@
         
         .lang-en { display: none; }
 
-        /* 後台介面 (覆蓋層) */
         #adminPanel {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.98); z-index: 999; padding: 40px 20px; overflow-y: auto;
@@ -150,7 +142,6 @@
         .form-group select { appearance: none; -webkit-appearance: none; }
         .submit-btn { width: 100%; background: #fff; color: #000; padding: 16px; font-weight: 600; cursor: pointer; text-transform: uppercase; border: none; }
 
-        /* 產品詳細頁面 */
         #productDetailView {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: var(--bg-color); z-index: 500; overflow-y: auto; padding-bottom: 80px;
@@ -374,7 +365,7 @@
                 products = await response.json();
                 renderProducts(); 
             } catch (error) {
-                console.error("載入失敗 (若是單機測試，此錯誤屬正常現象)", error);
+                console.error("載入失敗", error);
             }
         }
         fetchProducts(); 
@@ -396,13 +387,14 @@
         }
         
         let currentBase64Image = "";
+        let selectedImageFile = null; // R2 上傳所需的檔案變數
         let currentActiveCategory = "all"; 
         let currentActiveSubCategory = "all";
         let editProductIndex = -1;
 
         const CATEGORY_KEYS = ["all", "pendants", "rings", "bracelets", "necklaces", "earrings", "belt_buckles", "keychains", "chains", "clothing", "hats", "bags", "shoes", "accessories", "home"];
 
-const SUB_CATEGORIES = {
+        const SUB_CATEGORIES = {
             pendants: ["all", "s925", "18k", "22k"],
             rings: ["all", "s925", "18k", "22k"],
             bracelets: ["all", "s925", "18k", "22k"],
@@ -415,7 +407,7 @@ const SUB_CATEGORIES = {
             home: ["all", "fragrance", "perfume", "furniture"]
         };
 
-const i18n = {
+        const i18n = {
             zh: {
                 title: "GDNIGHT STUDIO | Chrome Hearts 現貨目錄",
                 subtitle: "Chrome Hearts 在庫現貨",
@@ -685,9 +677,45 @@ const i18n = {
             renderProducts();
         }
 
-        function saveProduct() {
-            if (!currentBase64Image && editProductIndex === -1) return alert(i18n[currentLang].alertImg);
+        async function saveProduct() {
+            if (!selectedImageFile && editProductIndex === -1 && !currentBase64Image) {
+                return alert(i18n[currentLang].alertImg);
+            }
             
+            const btn = document.getElementById('ui-btn-add');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "🔄 上傳圖片中 (Uploading)...";
+
+            let uploadedImageUrl = "";
+
+            if (selectedImageFile) {
+                try {
+                    const formData = new FormData();
+                    formData.append("file", selectedImageFile);
+
+                    const uploadRes = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const uploadResult = await uploadRes.json();
+                    
+                    if (uploadResult.success) {
+                        uploadedImageUrl = uploadResult.url; 
+                    } else {
+                        alert("圖片上傳失敗：" + uploadResult.error);
+                        btn.disabled = false;
+                        btn.innerText = originalText;
+                        return;
+                    }
+                } catch (err) {
+                    alert("網絡錯誤：" + err.message);
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                    return;
+                }
+            }
+
             const category = document.getElementById('prodCategory').value;
             const subSelect = document.getElementById('prodSubCategory');
             const subCategory = subSelect.style.display !== 'none' ? subSelect.value : 'all';
@@ -700,8 +728,8 @@ const i18n = {
                 products[editProductIndex].accessories = document.getElementById('prodAccessories').value; 
                 products[editProductIndex].category = category;
                 products[editProductIndex].subCategory = subCategory;
-                if (currentBase64Image) {
-                    products[editProductIndex].img = currentBase64Image; 
+                if (uploadedImageUrl) {
+                    products[editProductIndex].img = uploadedImageUrl; 
                 }
             } else {
                 products.unshift({
@@ -712,11 +740,13 @@ const i18n = {
                     accessories: document.getElementById('prodAccessories').value, 
                     category: category,
                     subCategory: subCategory,
-                    img: currentBase64Image,
+                    img: uploadedImageUrl,
                     isSoldOut: false,
                     checkoutLink: "" 
                 });
             }
+            
+            selectedImageFile = null; 
             syncToCloud(); 
         }
 
@@ -728,6 +758,7 @@ const i18n = {
             document.getElementById('prodAccessories').value = '';
             document.getElementById('prodImgFile').value = '';
             currentBase64Image = '';
+            selectedImageFile = null;
             
             const btn = document.getElementById('ui-btn-add');
             if(btn) {
@@ -754,6 +785,7 @@ const i18n = {
             
             document.getElementById('prodImgFile').value = '';
             currentBase64Image = ''; 
+            selectedImageFile = null;
 
             document.getElementById('ui-btn-add').innerText = i18n[currentLang].btnUpdate;
             document.getElementById('adminPanel').style.display = 'block';
@@ -855,6 +887,11 @@ const i18n = {
         }
 
         function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            selectedImageFile = file; 
+
             const reader = new FileReader();
             reader.onload = (e) => {
                 const img = new Image();
@@ -877,9 +914,7 @@ const i18n = {
                 };
                 img.src = e.target.result;
             };
-            if(event.target.files[0]) {
-                reader.readAsDataURL(event.target.files[0]);
-            }
+            reader.readAsDataURL(file);
         }
 
         function openProductDetail(index) {
