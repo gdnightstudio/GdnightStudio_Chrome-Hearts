@@ -15,6 +15,12 @@
       "id": "ee35536fecd64344b5a378e69505034e"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGE_BUCKET",
+      "bucket_name": "gdnight-stock-images"
+    }
+  ],
   "rules": [
     {
       "type": "Text",
