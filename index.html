@@ -369,7 +369,6 @@ function getAbsoluteUrl(url) {
     // 確保路徑開頭有斜線，並強制拼接你的公開網域
     const path = url.startsWith('/') ? url : '/' + url;
     return SITE_DOMAIN + path;
-}
         }
 
         async function fetchProducts() {
