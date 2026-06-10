@@ -359,6 +359,19 @@
         let currentPage = 1;         
         let searchQuery = "";         
         
+        // 核心修復：強制將任何路徑轉換為完整的絕對網址 (https://...)
+        function getAbsoluteUrl(url) {
+            if (!url) return '';
+            // 如果已經是完整的 http 或 https 開頭，直接回傳
+            if (/^https?:\/\//i.test(url)) return url;
+            try {
+                // 自動抓取當前網站的網域並拼接
+                return new URL(url, window.location.origin).href;
+            } catch (e) {
+                return url;
+            }
+        }
+
         async function fetchProducts() {
             try {
                 const response = await fetch('/api/products');
@@ -714,7 +727,6 @@
                         return;
                     }
                 } catch (err) {
-                    // 如果沒有後端，兼容原本純前端邏輯不報錯中斷
                     console.warn("網絡錯誤或後端尚未建立，改用前端本地 Base64 處理:", err.message);
                 }
             }
@@ -723,7 +735,6 @@
             const subSelect = document.getElementById('prodSubCategory');
             const subCategory = subSelect.style.display !== 'none' ? subSelect.value : 'all';
             
-            // 如果 API 上傳失敗或沒設定，降級使用 Base64
             const finalImageUrl = uploadedImageUrl || currentBase64Image;
 
             if (editProductIndex > -1) {
@@ -857,15 +868,12 @@
                 const prod = item.prod;
                 const originalIndex = item.index;
 
-                // --- 修正：將相對路徑轉為絕對路徑以供 WhatsApp 顯示 ---
-                let imageUrl = prod.img;
-                if (imageUrl && imageUrl.startsWith('/')) {
-                    imageUrl = window.location.origin + imageUrl;
-                }
-
+                // --- 修正：使用強制轉換絕對網址的工具 ---
+                const absoluteImageUrl = getAbsoluteUrl(prod.img);
                 let waText = t.waMsg.replace('{name}', prod.name);
                 const imgLabel = currentLang === 'zh' ? '圖片連結' : 'Image Link';
-                waText += `\n\n${imgLabel}：${imageUrl}`;
+                // 加了換行，確保網址不會跟其他文字黏在一起導致失效
+                waText += `\n\n${imgLabel} :\n${absoluteImageUrl}`;
                 const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
                 // -----------------------------------------------------
                 
@@ -942,15 +950,12 @@
                 categoryLabel += ` / ${t.subCats[prod.subCategory]}`;
             }
 
-            // --- 修正：將相對路徑轉為絕對路徑以供 WhatsApp 顯示 ---
-            let imageUrl = prod.img;
-            if (imageUrl && imageUrl.startsWith('/')) {
-                imageUrl = window.location.origin + imageUrl;
-            }
-
+            // --- 修正：使用強制轉換絕對網址的工具 ---
+            const absoluteImageUrl = getAbsoluteUrl(prod.img);
             let waText = t.waMsg.replace('{name}', prod.name);
             const imgLabel = currentLang === 'zh' ? '圖片連結' : 'Image Link';
-            waText += `\n\n${imgLabel}：${imageUrl}`;
+            // 加了換行，確保網址不會跟其他文字黏在一起導致失效
+            waText += `\n\n${imgLabel} :\n${absoluteImageUrl}`;
             const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
             // -----------------------------------------------------
             
