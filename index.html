@@ -351,6 +351,7 @@
     <script>
         const ADMIN_PASSWORD = "200002201";
         const WHATSAPP_NUMBER = "85261277220";
+        const SITE_DOMAIN = "https://gdnightstudiochromehearts2021.gdnightstudio.workers.dev/";
         
         let products = [];
         let isAdminMode = false;
@@ -359,17 +360,16 @@
         let currentPage = 1;         
         let searchQuery = "";         
         
-        // 核心修復：強制將任何路徑轉換為完整的絕對網址 (https://...)
-        function getAbsoluteUrl(url) {
-            if (!url) return '';
-            // 如果已經是完整的 http 或 https 開頭，直接回傳
-            if (/^https?:\/\//i.test(url)) return url;
-            try {
-                // 自動抓取當前網站的網域並拼接
-                return new URL(url, window.location.origin).href;
-            } catch (e) {
-                return url;
-            }
+     // 核心修復：強制將任何路徑轉換為完整的絕對網址 (https://...)
+function getAbsoluteUrl(url) {
+    if (!url) return '';
+    // 如果已經是完整的 http 或 https 開頭，直接回傳
+    if (/^https?:\/\//i.test(url)) return url;
+    
+    // 確保路徑開頭有斜線，並強制拼接你的公開網域
+    const path = url.startsWith('/') ? url : '/' + url;
+    return SITE_DOMAIN + path;
+}
         }
 
         async function fetchProducts() {
