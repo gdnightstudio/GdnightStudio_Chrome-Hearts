@@ -360,16 +360,21 @@
         let currentPage = 1;         
         let searchQuery = "";         
         
-     // 核心修復：強制將任何路徑轉換為完整的絕對網址 (https://...)
+// 核心修復：強制將任何路徑轉換為完整的絕對網址，並防範雙斜線問題
 function getAbsoluteUrl(url) {
     if (!url) return '';
     // 如果已經是完整的 http 或 https 開頭，直接回傳
     if (/^https?:\/\//i.test(url)) return url;
     
-    // 確保路徑開頭有斜線，並強制拼接你的公開網域
+    // 移除網域最後面的斜線 (如果有)
+    const domain = SITE_DOMAIN.endsWith('/') ? SITE_DOMAIN.slice(0, -1) : SITE_DOMAIN;
+    
+    // 確保路徑開頭有斜線
     const path = url.startsWith('/') ? url : '/' + url;
-    return SITE_DOMAIN + path;
-        }
+    
+    // 結合成正確的單斜線網址
+    return domain + path;
+}
 
         async function fetchProducts() {
             try {
