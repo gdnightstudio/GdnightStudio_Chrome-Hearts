@@ -381,11 +381,34 @@ function getAbsoluteUrl(url) {
                 const response = await fetch('/api/products');
                 products = await response.json();
                 renderProducts(); 
+                checkUrlForProduct(); // 全自動偵測網址參數並直連商品
             } catch (error) {
                 console.error("載入失敗", error);
             }
         }
         fetchProducts(); 
+
+        // 偵測並自動打開對應 ?id=xxx 的商品彈窗
+        function checkUrlForProduct() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const prodId = urlParams.get('id');
+            if (prodId && products.length > 0) {
+                // 優先使用商品自身的 id 屬性進行尋找
+                let targetIndex = products.findIndex(p => p.id && String(p.id) === String(prodId));
+                // 如果找不到，則嘗試做為陣列索引對應
+                if (targetIndex === -1) {
+                    if (!isNaN(prodId) && products[prodId]) {
+                        targetIndex = parseInt(prodId);
+                    }
+                }
+                // 如果成功找到對應商品，延時渲染確保彈窗正常開啟
+                if (targetIndex > -1) {
+                    setTimeout(() => {
+                        openProductDetail(targetIndex);
+                    }, 300);
+                }
+            }
+        }
 
         async function syncToCloud() {
             const btn = document.getElementById('ui-btn-add');
@@ -699,7 +722,6 @@ function getAbsoluteUrl(url) {
         }
 
         async function saveProduct() {
-            // 防呆邏輯：編輯模式允許不選新照片
             if (!selectedImageFile && editProductIndex === -1 && !currentBase64Image) {
                 return alert(i18n[currentLang].alertImg);
             }
@@ -872,12 +894,15 @@ function getAbsoluteUrl(url) {
                 const prod = item.prod;
                 const originalIndex = item.index;
 
-                // --- 修正：使用強制轉換絕對網址的工具 ---
+                // --- 修正：升級 WhatsApp 訊息，同時攜帶「商品直連連結」與「圖片絕對網址」 ---
                 const absoluteImageUrl = getAbsoluteUrl(prod.img);
+                const absoluteProductUrl = getAbsoluteUrl(`?id=${prod.id || originalIndex}`);
                 let waText = t.waMsg.replace('{name}', prod.name);
+                
                 const imgLabel = currentLang === 'zh' ? '圖片連結' : 'Image Link';
-                // 加了換行，確保網址不會跟其他文字黏在一起導致失效
-                waText += `\n\n${imgLabel} :\n${absoluteImageUrl}`;
+                const prodLinkLabel = currentLang === 'zh' ? '商品連結' : 'Product Link';
+                
+                waText += `\n\n${prodLinkLabel} :\n${absoluteProductUrl}\n\n${imgLabel} :\n${absoluteImageUrl}`;
                 const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
                 // -----------------------------------------------------
                 
@@ -954,12 +979,15 @@ function getAbsoluteUrl(url) {
                 categoryLabel += ` / ${t.subCats[prod.subCategory]}`;
             }
 
-            // --- 修正：使用強制轉換絕對網址的工具 ---
+            // --- 修正：打開彈窗時，同步升級 WhatsApp 訊息內容，並包含商品網頁連結與圖片絕對路徑 ---
             const absoluteImageUrl = getAbsoluteUrl(prod.img);
+            const absoluteProductUrl = getAbsoluteUrl(`?id=${prod.id || index}`);
             let waText = t.waMsg.replace('{name}', prod.name);
+            
             const imgLabel = currentLang === 'zh' ? '圖片連結' : 'Image Link';
-            // 加了換行，確保網址不會跟其他文字黏在一起導致失效
-            waText += `\n\n${imgLabel} :\n${absoluteImageUrl}`;
+            const prodLinkLabel = currentLang === 'zh' ? '商品連結' : 'Product Link';
+            
+            waText += `\n\n${prodLinkLabel} :\n${absoluteProductUrl}\n\n${imgLabel} :\n${absoluteImageUrl}`;
             const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waText)}`;
             // -----------------------------------------------------
             
@@ -983,15 +1011,26 @@ function getAbsoluteUrl(url) {
             document.getElementById('productDetailView').style.display = 'block';
             document.body.style.overflow = 'hidden'; 
             
-            // 加入 History API 支援手機返回鍵
-            history.pushState({ view: 'detail' }, '');
+            // 核心調整：讓網址同步帶上參數 ?id=商品，方便使用者直接複製網址列分享
+            history.pushState({ view: 'detail' }, '', `?id=${prod.id || index}`);
         }
 
         function closeProductDetail(fromPopState = false) {
             document.getElementById('productDetailView').style.display = 'none';
             document.body.style.overflow = 'auto'; 
-            if (!fromPopState && history.state && history.state.view === 'detail') {
-                history.back(); // 如果是按畫面的按鈕關閉，就手動清除這層 history
+            if (!fromPopState) {
+                // 如果是手動按返回按鈕關閉的，退回上一頁歷史紀錄，網址參數會自動被移除
+                if (history.state && history.state.view === 'detail') {
+                    history.back();
+                } else {
+                    history.pushState({ view: 'list' }, '', window.location.pathname);
+                }
+            } else {
+                // 如果是透過手機實體返回鍵觸發的，確認將網址清空回乾淨的狀態
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('id')) {
+                    history.replaceState({ view: 'list' }, '', window.location.pathname);
+                }
             }
         }
 
